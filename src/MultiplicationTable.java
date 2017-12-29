@@ -43,26 +43,28 @@ public class MultiplicationTable {
         System.out.println("Jaki jest wynik wyrażenia: " + firstNumber + " X " + secondNumber + "?");
     }
 
-    // This method giving Us User Response and catching input errors.
-    private void scanForUserResponse() {
-        System.out.println("Wpisz wynik mnożenia: ");
+    // This method scanning console to get User response.
+    private void scanUserResponse() {
         try {
             userResponse = scanner.nextInt();
+            checkConditions();
         } catch (InputMismatchException e) {
-            System.out.println("ERROR: Nieprawidłowy typ danych!");
+            System.out.println("Wpisano nieprawidłowy typ danych!");
+            System.out.println("KONIEC GRY!");
             isGameOver = true;
         }
     }
 
-    // This method giving User Response after the first (and other) answer is wrong.
-    private void scanForUserResponseAgain() {
+    // This method provide User Response.
+    private void firstResponseScan() {
+        System.out.println("Wpisz wynik: ");
+        scanUserResponse();
+    }
+
+    // This method giving User Response after the first answer is wrong.
+    private void secondResponseScan() {
         System.out.println("Ponownie wpisz wynik wyrażenia: " + firstNumber + " X " + secondNumber);
-        try {
-            userResponse = scanner.nextInt();
-        } catch (InputMismatchException e) {
-            System.out.println("ERROR: Nieprawidłowy typ danych!");
-            isGameOver = true;
-        }
+        scanUserResponse();
     }
 
     // This method adding one point to User.
@@ -85,11 +87,7 @@ public class MultiplicationTable {
 
     // This method checking and comparing User Response
     private void checkConditions() {
-        if (userResponse == 0) {
-            isGameOver = true;
-            System.out.println("KONIEC GRY!");
-        }
-        else if (userResponse == multiplicationResult) {
+        if (userResponse == multiplicationResult) {
             addUserPoint();
             System.out.println("To się zgadza! \n");
             showUserPoints();
@@ -99,8 +97,7 @@ public class MultiplicationTable {
             System.out.println("Błędny wynik! \n");
             showUserPoints();
             System.out.println("----------------------------------------");
-            scanForUserResponseAgain();
-            checkConditions();
+            secondResponseScan();
         }
     }
 
@@ -109,7 +106,6 @@ public class MultiplicationTable {
         generateNumbers();
         establishMultiplicationResult();
         showQuest();
-        scanForUserResponse();
-        checkConditions();
+        firstResponseScan();
     }
 }
