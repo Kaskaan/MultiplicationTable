@@ -10,7 +10,7 @@ public class MultiplicationTable {
     private int randomBounds;
     private int firstNumber;
     private int secondNumber;
-    private int multiplicationResult = firstNumber * secondNumber;
+    private int multiplicationResult;
     private int userResponse;
     private int userPoints;
     private boolean isGameOver = false;
