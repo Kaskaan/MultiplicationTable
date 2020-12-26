@@ -3,34 +3,39 @@ import java.util.Random;
 import java.util.Scanner;
 
 // Author: Konrad Lesiak
-// Last update: 29.12.2017
-// Multiplication Table (Console Game) - Give the correct answer and earn points!
+// Created: 29.12.2017
+// Updated: 26.12.2020
+// Multiplication Table (Terminal Game) - Good way to practice multiplication table answers.
+//
+// Choose the bounds, and answer the multiplication questions.
+// You have 3 attempts for every single answer. After good answer attempts are set up to 3.
+// You loose point every wrong answer. You get one point every good answer.
 
 public class MultiplicationTable {
-    private int randomBounds;
+    private final Random RANDOM_NUMBER = new Random();
+    private final Scanner USER_ANSWER = new Scanner(System.in);
+    private final int randomBounds;
     private int firstNumber;
     private int secondNumber;
     private int multiplicationResult;
     private int userResponse;
     private int userPoints;
+    private int availableAttempts = 3;
     private boolean isGameOver = false;
-    private Random random = new Random();
-    private Scanner scanner = new Scanner(System.in);
 
-    // Constructor with one Integer parameter (bounds of generated numbers).
-    // f.e. If this parameter will be "10", than max generated Quest will be: "10 X 10"
-    MultiplicationTable(int randomBounds) {
+    // If this parameter will be "10", than max generated quest will be: "10 X 10".
+    public MultiplicationTable(int randomBounds) {
         this.randomBounds = randomBounds + 1;
-        // Game is running until "isGameOver" will be false
-        for (int i = 0; isGameOver == false ; i++) {
+        // Game is running until "isGameOver" is false, or user available attempts will be more than 0
+        while (!isGameOver && availableAttempts > 0) {
             playGame();
         }
     }
 
-    // This method generating two random numbers.
+    // Generating two random numbers.
     private void generateNumbers() {
-        firstNumber = random.nextInt(randomBounds);
-        secondNumber = random.nextInt(randomBounds);
+        firstNumber = RANDOM_NUMBER.nextInt(randomBounds);
+        secondNumber = RANDOM_NUMBER.nextInt(randomBounds);
     }
 
     // This method calculating multiplication result from random numbers.
@@ -46,13 +51,20 @@ public class MultiplicationTable {
     // This method scanning console to get User response.
     private void scanUserResponse() {
         try {
-            userResponse = scanner.nextInt();
-            checkConditions();
+            if (availableAttempts > 0) {
+                userResponse = USER_ANSWER.nextInt();
+                checkConditions();
+            } else setGameOver();
+
         } catch (InputMismatchException e) {
             System.out.println("Wpisano nieprawidłowy typ danych!");
-            System.out.println("KONIEC GRY!");
-            isGameOver = true;
+            setGameOver();
         }
+    }
+
+    private void setGameOver() {
+        System.out.println("KONIEC GRY!");
+        isGameOver = true;
     }
 
     // This method provide User Response.
@@ -63,45 +75,54 @@ public class MultiplicationTable {
 
     // This method giving User Response after the first answer is wrong.
     private void secondResponseScan() {
-        System.out.println("Ponownie wpisz wynik wyrażenia: " + firstNumber + " X " + secondNumber);
-        scanUserResponse();
+        if (availableAttempts > 0) {
+            System.out.println("Ponownie wpisz wynik wyrażenia: " + firstNumber + " X " + secondNumber);
+            scanUserResponse();
+        } else setGameOver();
     }
 
-    // This method adding one point to User.
     private void addUserPoint() {
-        userPoints += 1;
+        userPoints++;
     }
 
-    // This method subtract one point to User.
     private void subtractUserPoint() {
         if (userPoints > 0) {
-            userPoints -= 1;
-        } else
-            userPoints -= 0;
+            userPoints--;
+        }
     }
 
-    // This method display user points.
+    private void subtractUserLife() {
+        this.availableAttempts--;
+    }
+
     private void showUserPoints() {
         System.out.println("Twoje punkty: " + userPoints);
     }
 
-    // This method checking and comparing User Response
+    private void resetAttempts() {
+        availableAttempts = 3;
+    }
+
+    // This method is checking and comparing user response with multiplication result
     private void checkConditions() {
         if (userResponse == multiplicationResult) {
             addUserPoint();
+            resetAttempts();
             System.out.println("To się zgadza! \n");
             showUserPoints();
             System.out.println("----------------------------------------");
         } else {
             subtractUserPoint();
+            subtractUserLife();
             System.out.println("Błędny wynik! \n");
+            System.out.println("Zostało podejść: " + availableAttempts);
             showUserPoints();
             System.out.println("----------------------------------------");
             secondResponseScan();
         }
     }
 
-    // This is all-in-one method to start this game
+    // Use this method to play the Game
     private void playGame() {
         generateNumbers();
         establishMultiplicationResult();
